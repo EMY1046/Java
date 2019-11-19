@@ -1,0 +1,135 @@
+//KABONZO RAMAZANI
+//kr1046
+// CSC4430
+// ASSIGNMENT 7
+import java.util.*; 
+import java.io.*; 
+
+
+public class cracker
+{
+	private final static int moves[][] =
+		{
+			{0,1,3},{3,1,0},
+			{0,2,5},{5,2,0},
+			{1,3,6},{6,3,1},
+			{1,4,8},{8,4,1},
+			{2,4,7},{7,4,2},
+			{2,5,9},{9,5,2},
+			{3,6,10},{10,6,3},
+			{3,7,12},{12,7,3},
+			{4,7,11},{11,7,4},
+			{4,8,13},{13,8,4},
+			{5,8,12},{12,8,5},
+			{5,9,14},{14,9,5},
+			{3,4,5},{5,4,3},
+			{6,7,8},{8,7,6},
+			{7,8,9},{9,8,7},
+			{10,11,12},{12,11,10},
+			{11,12,13},{13,12,11},
+			{12,13,14},{14,13,12}
+		};
+	
+	private static ArrayList<int[]> boardInfo = new ArrayList<int[]>(13);
+	
+	public static int move(ArrayList<Integer> positionsNotFree, ArrayList<Integer> FreeSlot, ArrayList<int[]> moveList, int Left)
+	{
+		if(Left==1)
+		{
+			boardInfo = new ArrayList<int[]>(moveList);
+			return 1;
+		}
+		
+		for (int j=0; j<36;j++)
+		{
+			
+			if(positionsNotFree.contains(moves[j][0])&&positionsNotFree.contains(moves[j][1])&&FreeSlot.contains(moves[j][2]))
+			{			
+				ArrayList<Integer> OccTempSlot= new ArrayList<Integer>(positionsNotFree);
+				ArrayList<Integer> openTempSlot= new ArrayList<Integer>(FreeSlot);
+				ArrayList<int[]> tempMoveList = new ArrayList<int[]>(moveList);
+				int tempLeft=Left;
+					
+				openTempSlot.add(moves[j][0]);
+				openTempSlot.add(moves[j][1]);
+				openTempSlot.remove(Integer.valueOf(moves[j][2]));
+						
+				OccTempSlot.remove(Integer.valueOf(moves[j][0]));
+				OccTempSlot.remove(Integer.valueOf(moves[j][1]));
+				OccTempSlot.add(moves[j][2]);
+				
+				tempLeft--;
+				tempMoveList.add(moves[j]);
+				
+				
+				if(move(OccTempSlot, openTempSlot, tempMoveList, tempLeft)==1)
+				{
+					return 1;
+				}
+			}
+		} 
+		return 0;
+	}
+	
+	public static void printStatus(char[] positions)
+	{
+		System.out.println("    "+positions[0]+"    ");
+		System.out.println("   "+positions[1]+" "+positions[2]+"   ");
+		System.out.println("  "+positions[3]+" "+positions[4]+" "+positions[5]+"  ");
+		System.out.println(" "+positions[6]+" "+positions[7]+" "+positions[8]+" "+positions[9]+" ");
+		System.out.println(positions[10]+" "+positions[11]+" "+positions[12]+" "+positions[13]+" "+positions[14]+"\n");
+	}
+	
+	public static void main(String[] args)
+	{
+		char positions[] = new char[15];
+		
+		ArrayList<Integer> positionsNotFree = new ArrayList<Integer>(15);
+		ArrayList<Integer> FreeSlot = new ArrayList<Integer>(15);
+				
+		for (int i=0; i<5; i++)
+		{
+			System.out.println("=== "+i+" ===\n");
+			
+			//Initialize positions
+			for (int j=0; j<15; j++)
+			{
+				positionsNotFree.add(j);
+				positions[j]='x';
+			}
+			//Initialize empty spot
+			positions[i]='.';
+			positionsNotFree.remove(Integer.valueOf(i));
+			FreeSlot.add(i);
+			printStatus(positions); //print initial status
+			
+			
+			//find solution
+			if(move(positionsNotFree, FreeSlot, boardInfo, 14)==1)
+			{
+				for(int j=0;j<13;j++)
+				{
+					
+					positions[boardInfo.get(j)[0]]='.';
+					positions[boardInfo.get(j)[1]]='.';
+					positions[boardInfo.get(j)[2]]='x';
+					printStatus(positions);
+				}
+				positionsNotFree.clear();
+				boardInfo.clear();
+				FreeSlot.clear();
+				
+			}
+			else
+			{
+				// in case of error
+				System.out.println("Error");
+				return;
+			}
+		
+			System.out.println();
+			
+		}
+		
+	}
+}
